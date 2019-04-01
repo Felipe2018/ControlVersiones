@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<error-definitions>
+	<error-definition severity="ERROR" alias="wrongParameters" http-status="400">
+		<message>Parámetros inválidos. Error al parsear los filtros en campo $filter: {0} </message>		
+	</error-definition>
+	<error-definition severity="ERROR" alias="mandatoryParametersMissingExplicit" http-status="400">
+		<message>Parámetros obligatorios no fueron informados: {0}</message>		
+	</error-definition>	
+	<error-definition severity="ERROR" alias="identityDocumentValueIsNotAsExpected" http-status="400">
+		<message>El valor del parámetro docIdentificador es incorrecto, detalle error: {0} </message>		
+	</error-definition>
+	<error-definition severity="ERROR" alias="inexistentFilter" http-status="400">
+		<message>La opción de filtrado por {0} no existe</message>		
+	</error-definition>
+	<error-definition severity="ERROR" alias="filterSearchParseException" http-status="400">
+		<message>Error al analizar gramaticalmente la búsqueda en el parámetro $filter. Valor enviado para $filter es: {0}</message>		
+	</error-definition>
+	<error-definition severity="ERROR" alias="filterEmpty" http-status="400">
+		<message>Parámetro de filtrado vacío</message>		
+	</error-definition>
+	<error-definition severity="ERROR" alias="paramValueIsNotAsExpected" http-status="400">
+		<message>Valor del parámetro {0} no es el esperado. Valores aceptados son {1}.</message>		
+	</error-definition>
+	<error-definition severity="ERROR" alias="parameterNotRequiredLength" http-status="400">
+		<message>Valor del parámetro: {0} no cumple el largo de: {1}</message>		
+	</error-definition>
+	<error-definition severity="ERROR" alias="wrongChangePassword" http-status="400">
+		<message>El cambio de clave no se ha realizado</message>		
+	</error-definition>
+	<error-definition severity="ERROR" alias="parameterSQLException" http-status="500">
+		<message>Se ha generado una excepción tipo SQLException: {0}</message>		
+	</error-definition>
+</error-definitions>
