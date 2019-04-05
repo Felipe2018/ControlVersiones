@@ -15,5 +15,5 @@ public interface IRelComponenteServiceDao {
 	public DTOComponente postComponenteProyectos(
 			DTOComponente componente,
 			DTOProyecto dtoProyecto
-			) ;
+			);
 }

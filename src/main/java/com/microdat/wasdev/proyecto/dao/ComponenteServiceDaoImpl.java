@@ -126,6 +126,7 @@ public class ComponenteServiceDaoImpl implements IComponenteServiceDao {
 		}
 		return componente;
 	}
+	
 	//Eliminar Componente
 	@Override
 	public void eliminarComponente(int id) throws SQLException{

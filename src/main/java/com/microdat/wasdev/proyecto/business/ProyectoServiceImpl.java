@@ -13,13 +13,22 @@ public class ProyectoServiceImpl implements ProyectoService {
 	private IProyectoServiceDao proyectoServiceDao;
 	
 	@Override
-	public DTOProyectoList getProyecto(DTOProyecto dtoProyecto) {
-		return proyectoServiceDao.getProyecto(dtoProyecto);
+	public DTOProyectoList getProyectos(DTOProyecto dtoProyecto) {
+		return proyectoServiceDao.getProyectos(dtoProyecto);
 	}
 
+	@Override
+	public DTOProyecto getProyecto(int id) {
+		return proyectoServiceDao.getProyecto(id);
+	}
+	
 	@Override
 	public DTOProyecto postProyecto(DTOProyecto dtoProyecto) {
 		return proyectoServiceDao.postProyecto(dtoProyecto) ;
 	}
 
+	@Override
+	public DTOProyecto putProyecto(DTOProyecto dtoProyecto) {
+		return proyectoServiceDao.putProyecto(dtoProyecto) ;
+	}
 }

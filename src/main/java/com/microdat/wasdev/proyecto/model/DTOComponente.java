@@ -26,6 +26,7 @@ public class DTOComponente implements Serializable{
 	private DTOSolicitud solicitud;
 	private DTOReglaConflicto reglaConflicto;
 	private Integer cantidad;
+	private Integer idProyecto;
 	public DTOComponente() {}
 
 	public Integer getId() {
@@ -130,6 +131,14 @@ public class DTOComponente implements Serializable{
 
 	public void setCantidad(Integer cantidad) {
 		this.cantidad = cantidad;
+	}
+
+	public Integer getIdProyecto() {
+		return idProyecto;
+	}
+
+	public void setIdProyecto(Integer idProyecto) {
+		this.idProyecto = idProyecto;
 	}
 	
 }

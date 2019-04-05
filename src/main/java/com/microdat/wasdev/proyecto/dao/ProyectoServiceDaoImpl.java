@@ -23,13 +23,14 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 	@Autowired
 	RoutineUtils routineUtils;
 	
+	//Listar Proyectos
 	@Override
-	public DTOProyectoList getProyecto(DTOProyecto dtoProyecto) {
+	public DTOProyectoList getProyectos(DTOProyecto dtoProyecto) {
 		Connection co = null;
 		Statement stm = null;
 		ResultSet rs = null;
 		String sql = 	
-				"Select p.id_proyecto, p.nombre_proyecto, p.codigo_proyecto, p.ts_creacion_proyecto, \r\n" + 
+				"Select p.id_proyecto, p.nombre_proyecto, p.codigo_proyecto, p.ts_creacion_proyecto, tipo, \r\n" + 
 				"p.comentario_proyecto, fp.nombre_fase_proyecto, u.nombre_usuario \r\n" + 
 				"from proyecto p \r\n" + 
 				"inner join fase_proyecto fp on p.id_fase_proyecto = fp.id_fase_proyecto\r\n" + 
@@ -70,7 +71,8 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 				//dtoProyectoCarga.setDyd(rs.getInt("id_dyd"));	
 				dtoProyectoCarga.setComentario(rs.getString("comentario_proyecto"));
 				dtoProyectoCarga.setCodigo(rs.getString("codigo_proyecto"));
-				dtoProyectoCarga.setFechaCreacion(rs.getDate("ts_creacion_proyecto"));;
+				dtoProyectoCarga.setFechaCreacion(rs.getDate("ts_creacion_proyecto"));
+				dtoProyectoCarga.setTipo(rs.getString("tipo"));
 				
 				DTOUsuario responsable = new DTOUsuario();
 				//responsable.setId(rs.getInt("id_responsable"));
@@ -104,19 +106,104 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
  }
 	
 
+	//Listar 1 Proyecto
+	@Override
+	public DTOProyecto getProyecto( int id) {
+		Connection co = null;
+		Statement stm = null;
+		ResultSet rs = null;
+		String sql = 	
+				"select p.*, u.nombre_usuario, f.nombre_fase_proyecto  from proyecto p "
+				+"inner join usuario u on p.id_responsable = u.id_usuario " 
+				+"inner join fase_proyecto f on p.id_fase_proyecto = f.id_fase_proyecto "
+				+"where id_proyecto = " + id ;
+				
+		System.out.println("Si ejecuta query listar 1 Proyecto");
+		
+		
+		DTOProyecto dtoProyectoCarga = new DTOProyecto();
+			try {
+			co = Conexion.conn();
+			stm = co.createStatement();
+			rs = stm.executeQuery(sql);
+			
+			System.out.println("Conexion Correcta bbdd");
+		
+			while (rs.next()) {
+
+				System.out.println(rs.getDate("ts_creacion_proyecto"));
+				System.out.println(rs.getInt("id_proyecto"));	
+				//System.out.println(rs.getInt("id_dyd"));
+				System.out.println(rs.getString("nombre_proyecto"));
+				System.out.println(rs.getString("codigo_proyecto"));
+				System.out.println(rs.getString("comentario_proyecto"));
+				//System.out.println(rs.getInt("id_responsable"));
+				System.out.println(rs.getString("nombre_usuario"));
+				//System.out.println(rs.getInt("id_fase_proyecto"));
+				System.out.println(rs.getString("nombre_fase_proyecto"));
+				
+				
+				dtoProyectoCarga.setId(rs.getInt("id_proyecto"));
+				dtoProyectoCarga.setNombreProyecto(rs.getString("nombre_proyecto"));
+				//dtoProyectoCarga.setDyd(rs.getInt("id_dyd"));	
+				dtoProyectoCarga.setComentario(rs.getString("comentario_proyecto"));
+				dtoProyectoCarga.setCodigo(rs.getString("codigo_proyecto"));
+				dtoProyectoCarga.setFechaCreacion(rs.getDate("ts_creacion_proyecto"));
+				dtoProyectoCarga.setTipo(rs.getString("tipo"));
+				
+				DTOUsuario responsable = new DTOUsuario();
+				//responsable.setId(rs.getInt("id_responsable"));
+				responsable.setNombre(rs.getString("nombre_usuario"));
+				dtoProyectoCarga.setResponsable(responsable);
+				
+				DTOListaOpciones faseDesarrollo = new DTOListaOpciones();
+				//faseDesarrollo.setId(rs.getInt("id_fase_proyecto"));
+				faseDesarrollo.setNombre(rs.getString("nombre_fase_proyecto"));
+				dtoProyectoCarga.setFaseDesarrollo(faseDesarrollo);
+				
+				//dtoProyecto.setFechaCreacion(rs.getDate("ts_creacion_proyecto"));
+				
+			}
+						
+			System.out.println("Lista obtenida proyectos correctamente");
+			stm.close();
+			rs.close();
+			co.close();
+			System.out.println("No cae al retornar Servicio");
+		} catch (SQLException e) {
+			System.out.println("Error al obtener la lista de Proyectos");
+			e.printStackTrace();
+		}
+			
+			return  dtoProyectoCarga;
+		
+ }
+	
+	//Insertar Proyecto
 	@Override
 	public DTOProyecto postProyecto(DTOProyecto dtoProyecto) {
 
 		Connection co = null;
 		PreparedStatement ps =null;
+		Boolean agregaFecha = false;
 		
-		String sql = 
 				
+		String sql1=		
 			"insert into proyecto (nombre_proyecto, id_responsable, "
-			+"comentario_proyecto, id_fase_desarrollo, ts_creacion_proyecto,codigo_proyecto) \r\n"  
-			+ " values (?,?,?,?,SysDate ,? )";
-			//+ " id_dyd)\r\n" SysDate 
-			
+			+"comentario_proyecto, id_fase_proyecto, ts_creacion_proyecto,codigo_proyecto,tipo  ";  
+		String sqlVal =	
+			 " ) values (?,?,?,?,SysDate ,?,? "; 
+		String sqlFin =	
+		" )";
+		
+			if(dtoProyecto.getFechaEstimadaEntrega()!=null) {
+				System.out.println("Fecha no nula: " + dtoProyecto.getFechaEstimadaEntrega());
+				sql1=sql1+ ", fecha_estimada_entrega";
+				sqlVal= sqlVal+ ", ?";
+				agregaFecha= true;
+			}
+		String sql = sql1+sqlVal+sqlFin ;
+		
 		
 		System.out.println("Envia query insertar Proyecto");
 		DTOProyecto dtoProyectoOut = new DTOProyecto();
@@ -125,29 +212,30 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 			co = Conexion.conn();
 			 ps = co.prepareStatement(sql);
 		
-			//System.out.println(dtoProyecto.getId());
-			//System.out.println(dtoProyecto.getCliente());
 			System.out.println(dtoProyecto.getNombreProyecto());
 			System.out.println(dtoProyecto.getResponsable().getId());
 			System.out.println(dtoProyecto.getComentario());
 			System.out.println(dtoProyecto.getFaseDesarrollo().getId());
-			System.out.println(dtoProyecto.getFechaCreacion());
 			System.out.println(dtoProyecto.getCodigo());
 			//Insertar a Query
 			ps.setString(1, dtoProyecto.getNombreProyecto());
 			ps.setInt(2, dtoProyecto.getResponsable().getId());
 			ps.setString(3, dtoProyecto.getComentario());
 			ps.setInt(4, dtoProyecto.getFaseDesarrollo().getId());
-			//ps.setDate(5, (Date) dtoProyecto.getFechaCreacion());	
 			ps.setString(5, dtoProyecto.getCodigo());
+			ps.setString(6, dtoProyecto.getTipo());
+			if(agregaFecha==true) {
+				ps.setDate(7, dtoProyecto.getFechaEstimadaEntrega());
+			}
+			
 			
 			dtoProyectoOut.setNombreProyecto(dtoProyecto.getNombreProyecto());
-			//dtoProyectoOut.setFaseDesarrollo.(dtoProyecto.getFaseDesarrollo().getId());
+			dtoProyectoOut.setComentario("Agregado Correctamente");
 			//dtoProyectoOut.setResponsable(dtoProyecto.getResponsable().getNombre());
 			//dtoProyectoOut.setResponsable(dtoProyecto.getCodigo());	
 				
 				//Ejecuta Query
-				System.out.println("No ejecuta qry");
+				
 				ps.executeQuery();
 				System.out.println("Si ejecuta qry Inserta");
 		
@@ -157,9 +245,48 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 				System.out.println("Error al insertar la lista de proyectos");
 				e.printStackTrace();
 			}
-				
-				
-				return dtoProyectoOut;
+		return dtoProyectoOut;
 	}
 
+	//Modificar Proyecto
+	@Override
+	public DTOProyecto putProyecto(DTOProyecto dtoProyecto) {
+		
+		Connection co = null;
+		PreparedStatement ps =null;
+		
+		String sql =
+				"update proyecto " 
+				+ "set nombre_proyecto = ? , id_responsable = ?, id_fase_proyecto= ?,  "
+				+ "comentario_proyecto = ?, codigo_proyecto = ?, tipo = ? " 
+				+ "where id_proyecto = ?";
+		
+		DTOProyecto dtoProyectoOut = new DTOProyecto();
+		
+		try {
+		
+			co = Conexion.conn();
+			ps = co.prepareStatement(sql);
+			 
+			ps.setString(1, dtoProyecto.getNombreProyecto());
+			ps.setInt(2, dtoProyecto.getResponsable().getId());
+			ps.setInt(3, dtoProyecto.getFaseDesarrollo().getId());
+			ps.setString(4, dtoProyecto.getComentario());
+			ps.setString(5, dtoProyecto.getCodigo());
+			ps.setString(6, dtoProyecto.getTipo());
+			ps.setInt(7, dtoProyecto.getId());
+			 
+			ps.executeQuery();
+			System.out.println("Si ejecuta qry Modificar");
+	
+			ps.close();
+			co.close();
+			
+		} catch (SQLException e) {
+			System.out.println("Error al modificar proyecto");
+			e.printStackTrace();
+		}
+	return dtoProyectoOut;
+				
+	}
 }

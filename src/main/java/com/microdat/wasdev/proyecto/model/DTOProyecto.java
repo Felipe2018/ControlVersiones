@@ -21,6 +21,8 @@ public class DTOProyecto implements Serializable {
 	private String comentario;
 	private String codigo;
 	private Date fechaCreacion;
+	private Date fechaEntrega;
+	private Date fechaEstimadaEntrega;
 	private List<DTOComponente> componentes;
 	private Integer dyd;
 	private String tipo;
@@ -105,6 +107,22 @@ public class DTOProyecto implements Serializable {
 
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
+	}
+
+	public Date getFechaEntrega() {
+		return fechaEntrega;
+	}
+
+	public void setFechaEntrega(Date fechaEntrega) {
+		this.fechaEntrega = fechaEntrega;
+	}
+
+	public Date getFechaEstimadaEntrega() {
+		return fechaEstimadaEntrega;
+	}
+
+	public void setFechaEstimadaEntrega(Date fechaEstimadaEntrega) {
+		this.fechaEstimadaEntrega = fechaEstimadaEntrega;
 	}
 	
 }

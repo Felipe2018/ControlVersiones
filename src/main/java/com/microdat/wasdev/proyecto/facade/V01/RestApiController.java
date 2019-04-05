@@ -6,9 +6,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -66,7 +68,9 @@ public class RestApiController {
 	}
 	
 	//LISTAR 1 REL COMPONENTES  LISTO
+		
 		@GetMapping(path = "/relcomponente/{id}", produces = "application/json")
+		@CrossOrigin(origins = "*")
 		public ResponseEntity<?> getComponente(
 				@PathVariable("id") Integer id
 				) {
@@ -91,7 +95,7 @@ public class RestApiController {
 		public ResponseEntity<?> postComponenteProyectos(
 				@PathVariable("id") Integer id,
 				@RequestBody DTOComponente dtoComponente, DTOProyecto dtoProyecto) {
-			System.out.println("Entra a servicio Insertar Proyecto");
+			System.out.println("Entra a servicio Insertar Rel Componente");
 			
 			DTOComponente dtoComponenteOut = new DTOComponente();
 			//DTOProyecto dtoProyecto =new DTOProyecto();
@@ -103,14 +107,15 @@ public class RestApiController {
 			}
 			
 			
-			/*
 			if(dtoComponente == null) {
 				return businessServiceException.getError("mandatoryParametersMissingExplicit", "componente");
-			}else if(dtoComponente.getNombre() == null || dtoComponente.getNombre().equals(StringUtils.EMPTY)) {
-				return businessServiceException.getError("mandatoryParametersMissingExplicit", "componente.nombre");
-			}else if(dtoComponente.getCanal()== null || dtoComponente.getCanal().equals(StringUtils.EMPTY)) {
-				return businessServiceException.getError("mandatoryParametersMissingExplicit", "componente.canal");
-			}*/
+			}else if(dtoComponente.getId() == null ) {
+				return businessServiceException.getError("mandatoryParametersMissingExplicit", "componente.id");
+			}else if(dtoComponente.getSolicitud().getId()== null ) {
+				return businessServiceException.getError("mandatoryParametersMissingExplicit", "componente.id_solicitud");
+			}else if(dtoComponente.getUbicaciones().get(0).getAmbiente().getId()== null ) {
+				return businessServiceException.getError("mandatoryParametersMissingExplicit", "componente.idambiente");
+			}
 			
 			dtoComponenteOut = relComponenteService.postComponenteProyectos(dtoComponente,dtoProyecto);
 			//dtoComponenteList = userService.getComponentesProyecto(dtoComponenteOut);
@@ -202,35 +207,54 @@ public class RestApiController {
 //*********************************************************		
 		
 	//LISTAR PROYECTOS LISTO
-	@GetMapping(path = "/{id}/proyecto", produces = "application/json")
-	public ResponseEntity<?> getProyecto(
-			@PathVariable("id") String id) {
+	@GetMapping(path = "/proyectos", produces = "application/json")
+	public ResponseEntity<?> getProyectos(
+			//@PathVariable("id") String id
+			) {
 		
 		
 		DTOProyectoList dtoProyectoList = new DTOProyectoList();
 		DTOProyecto dtoProyecto = new DTOProyecto();
 		
 		//DTOComponente dtoComponente = new DTOComponente();
-		
+		/*
 		try {
 			dtoProyecto.setId(Integer.parseInt(id));
 		}catch (NumberFormatException e){
 			return businessServiceException.getError("paramValueIsNotAsExpected", "id", "numéricos");
 		}
-		
-		dtoProyectoList = proyectoService.getProyecto(dtoProyecto);
+		*/
+		dtoProyectoList = proyectoService.getProyectos(dtoProyecto);
 		
 		
 		return new ResponseEntity<DTOProyectoList>(dtoProyectoList,HttpStatus.OK);
 		
 	}
 	
+	
+	//LISTAR 1 PROYECTO LISTO
+		@GetMapping(path = "/proyecto/{id}", produces = "application/json")
+		public ResponseEntity<?> getProyecto(
+				@PathVariable("id") Integer id) {
+		
+			DTOProyecto dtoProyecto = new DTOProyecto();
+			
+			try {
+				dtoProyecto.setId(id);
+			}catch (NumberFormatException e){
+				return businessServiceException.getError("paramValueIsNotAsExpected", "id", "numéricos");
+			}
+			
+			dtoProyecto = proyectoService.getProyecto(id);
+		
+			return new ResponseEntity<DTOProyecto>(dtoProyecto,HttpStatus.OK);	
+		}
+	
+	
 	//INSERTAR PROYECTO LISTO
 			@PostMapping(path = "/proyecto", consumes = "application/json", produces = "application/json")
 			public ResponseEntity<?> postProyecto(
 					@RequestBody DTOProyecto dtoProyecto) {
-				
-				//DTOComponenteList dtoComponenteList = new DTOComponenteList();
 				DTOProyecto dtoProyectoOut = new DTOProyecto();
 				
 				System.out.println("Entra a servicio Insertar Proyecto");
@@ -241,6 +265,12 @@ public class RestApiController {
 					return businessServiceException.getError("mandatoryParametersMissingExplicit", "proyecto.nombre");
 				}else if(dtoProyecto.getCodigo()== null || dtoProyecto.getCodigo().equals(StringUtils.EMPTY)) {
 					return businessServiceException.getError("mandatoryParametersMissingExplicit", "proyecto.codigo");
+				}else if(dtoProyecto.getComentario()== null ) {
+					return businessServiceException.getError("mandatoryParametersMissingExplicit", "proyecto.comentario");
+				}else if(dtoProyecto.getResponsable().getId()== null ) {
+					return businessServiceException.getError("mandatoryParametersMissingExplicit", "proyecto.id_Responsable");
+				}else if(dtoProyecto.getTipo()== null ) {
+					return businessServiceException.getError("mandatoryParametersMissingExplicit", "proyecto.tipo");
 				}
 				
 				dtoProyectoOut = proyectoService.postProyecto(dtoProyecto);
@@ -248,7 +278,20 @@ public class RestApiController {
 				return new ResponseEntity<DTOProyecto>(dtoProyectoOut,HttpStatus.OK);
 			}
 	
-	
+	//MODIFICAR PROYECTO
+		@PutMapping(path = "/proyecto/{id_proyecto}", consumes = "application/json", produces = "application/json")
+		public ResponseEntity<?> putProyecto(@PathVariable(value="id_proyecto") int id,
+				@RequestBody DTOProyecto dtoProyecto){
+			
+			DTOProyecto dtoProyectoOut = new DTOProyecto();
+			
+			System.out.println("Entra a servicio Modificar Proyecto");
+			
+			dtoProyectoOut = proyectoService.putProyecto(dtoProyecto);
+			
+			return new ResponseEntity<DTOProyecto>(dtoProyectoOut,HttpStatus.OK);
+		
+		}
 			
 //********************************************************
 			

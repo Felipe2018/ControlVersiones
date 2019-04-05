@@ -67,9 +67,9 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 			try {
 			co = Conexion.conn();
 			stm = co.createStatement();
-			System.out.println("NO EJECUTA QRY");
+			
 			rs = stm.executeQuery(sql);
-			//ResultSet rs = routineUtils.driverManagerConnection(sql);
+			
 			System.out.println("Conexion Correcta bbdd");
 			
 			while (rs.next()) {
@@ -79,7 +79,7 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 					dtoComponente1.setId(rs.getInt("id_componente"));
 					dtoComponente1.setDescripcion(rs.getString("descripcion"));
 					dtoComponente1.setComentario(rs.getString("comentario"));
-					
+					dtoComponente1.setIdProyecto(rs.getInt("id_proyecto"));
 					DTOAmbiente ambiente = new DTOAmbiente();
 					DTOUbicacion ubicacion = new DTOUbicacion();
 					ambiente.setId(rs.getInt("id_ambiente"));
@@ -123,7 +123,7 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 		
 	  }
 
-	//Listar 1 id Componente
+	//Listar 1 id Rel Componente
 	@Override
 	public DTOComponenteList getComponente(DTOComponente componente)  {
 		
@@ -145,18 +145,19 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 			try {
 			co = Conexion.conn();
 			stm = co.createStatement();
-			
 			rs = stm.executeQuery(sql);
+			
 			//ResultSet rs = routineUtils.driverManagerConnection(sql);
 			System.out.println("Conexion Correcta bbdd");
 			
 			while (rs.next()) {
-				System.out.println("while");
+				
 					//Agrega id componente
 					DTOComponente dtoComponente1 = new DTOComponente();
 					dtoComponente1.setId(rs.getInt("id_componente"));
 					dtoComponente1.setDescripcion(rs.getString("descripcion"));
 					dtoComponente1.setComentario(rs.getString("comentario"));
+					dtoComponente1.setIdProyecto(rs.getInt("id_proyecto"));
 					
 					DTOAmbiente ambiente = new DTOAmbiente();
 					DTOUbicacion ubicacion = new DTOUbicacion();
@@ -165,7 +166,7 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 					List<DTOUbicacion> ubicaciones = new ArrayList<DTOUbicacion>();
 					ubicaciones.add(ubicacion);
 					dtoComponente1.setUbicaciones(ubicaciones);
-					System.out.println("solicitud");
+					
 					DTOSolicitud solicitud = new DTOSolicitud();
 					solicitud.setId(rs.getString("nro_solicitud"));
 					dtoComponente1.setSolicitud(solicitud);
@@ -201,30 +202,87 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 		
 	  }
 	
-	//Insertar Componente
+	//Insertar Rel Componente
 		@Override
-		public DTOComponente postComponenteProyectos(DTOComponente dtoComponente,DTOProyecto dtoProyecto) {
+		public DTOComponente postComponenteProyectos(DTOComponente dtoComponente,DTOProyecto dtoProyecto)  {
 				
 			Connection co = null;
 			PreparedStatement ps =null;
+			Statement stm = null;
+			ResultSet rs = null;
+			int cantidad =0;
+			Statement stm2 = null;
+			ResultSet rs2 = null;
+			int ProyectoCreado = 0;
+			
 			String sql = 
 					
 				"insert into rel_proy_componente (id_proyecto,id_componente,id_ambiente,\r\n" + 
 				"nro_solicitud,id_estado_componente,id_ambiente_subida,descripcion)\r\n" + 
 				"values(?,?,?,?,?,?,?)";	
-						
-			System.out.println("Envia query insertar rel componente");
+					
+			String sql2 =
+					"select COUNT(*) cantidadComponente \r\n" + 
+					"from rel_proy_componente \r\n" + 
+					"where id_componente =  " +dtoComponente.getId()  + 
+					" and id_proyecto =  "+ dtoProyecto.getId();
+					
+			String sql3 =
+					"select id_proyecto, nro_solicitud \r\n" + 
+					"from rel_proy_componente\r\n" + 
+					"where nro_solicitud = '"+dtoComponente.getSolicitud().getId()+"'";
 			
 			
 			DTOComponente dtoComponenteOut = new DTOComponente();
 			//TOProyecto dtoProyecto = new DTOProyecto();
-			System.out.println(dtoProyecto.getId());
+		
 			try {
 				co = Conexion.conn();
-				 ps = co.prepareStatement(sql);
-			
-				//int i = 1;
+				ps = co.prepareStatement(sql);
+				//Ejecuta Query Por cada Ambiente
+				boolean componente = false;
+				boolean solicitud = false;
+				 
+				stm = co.createStatement();
+				rs = stm.executeQuery(sql2);
+					
+				while (rs.next()) {
+					System.out.println(rs.getInt("cantidadComponente"));
+					cantidad = rs.getInt("cantidadComponente");
+				}
 				
+				if(cantidad == 0) {
+					componente = true;
+				}else {
+					componente = false;
+					throw new Exception ("Componente ya existe en este Proyecto");
+				}
+				
+				
+				stm2 = co.createStatement();
+				rs2 = stm2.executeQuery(sql3);
+				
+				System.out.println("El proyecto a ingresar: "+ dtoProyecto.getId());
+				while (rs2.next()) {
+					
+					System.out.println("El id Proyecto existente con el nro solicitud: "+ rs2.getInt("id_proyecto"));
+					
+					System.out.println("*******************************");
+					ProyectoCreado = rs2.getInt("id_proyecto");
+					
+				}
+				
+				
+					if( dtoProyecto.getId() == ProyectoCreado || ProyectoCreado== 0) {
+						solicitud = true;
+					}else {
+						solicitud = false;
+						throw new Exception("Solicitud existe en otro Proyecto");
+					}
+				
+				
+				
+				/*
 				//1 ID PROYECTO
 				System.out.println( dtoProyecto.getId());
 				//2 ID COMPONENTE
@@ -245,7 +303,7 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 				//System.out.println(dtoComponente.getComentario());
 				//10 PRIORIDAD
 				//System.out.println();
-				
+				*/
 				ps.setInt(1, dtoProyecto.getId());
 				ps.setInt(2, dtoComponente.getId());
 				ps.setInt(3, dtoComponente.getUbicaciones().get(0).getAmbiente().getId());
@@ -256,57 +314,32 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 				//ps.setInt(8, dtoComponente.getUbicaciones().get(0).getAmbiente().getId());
 				
 				
-				//Ejecuta Query Por cada Ambiente
-				ps.executeQuery();
-				System.out.println("Si ejecuta qry insertar relacion");
-			
-				
-				//dtoComponenteOut.setNombre(dtoComponente.getNombre());
-				//dtoComponenteOut.setCanal(dtoComponente.getCanal());
-				
-				
-				//Ejecuta Query
-				//ps.executeQuery();
-				//System.out.println("Si ejecuta qry y pasa a buscar id");
-				//dtoComponente.setId(1123);
-				
-				/*
-				//PRUEBA INSERTAR
-				String sql2 = 
-						
-						"insert into PRUEBA (NOM_PRUEBA,FECHA)\r\n" + 
-						"values(?,?)";	
-								
-					System.out.println("Envia query insertar rel componente");
-					
-					co = Conexion.conn();
-					 ps2 = co.prepareStatement(sql2);
-					
-					System.out.println(dtoComponente.getNombre());
-					//NRO SOLICITUD
-					System.out.println(dtoComponente.getSolicitud().getFechaEmision());
-						
-					ps2.setString(1, dtoComponente.getNombre());
-					ps2.setDate(2, dtoComponente.getSolicitud().getFechaEmision());
-					//ps.setString(3, dtoComponente.getFuncionalidad().getNombre());
-					//ps2.setInt(3, dtoComponente.getFuncionalidad().getId());
+				System.out.println(componente + " " + solicitud);
+				if(componente== true & solicitud== true ) {
+					ps.executeQuery();
+					dtoComponenteOut.setId(dtoComponente.getId());
+					dtoComponenteOut.setIdProyecto( dtoProyecto.getId());
+					dtoComponenteOut.setDescripcion(dtoComponente.getDescripcion());
+				}else {
+					dtoComponenteOut.setComentario("No se ha podido insertar el rel componente");
+				}
 		
-					dtoComponenteOut.setNombre(dtoComponente.getNombre());
-					//dtoComponenteOut.setSolicitud(dtoComponente.getSolicitud().getFechaEmision());
-					
-					
-					//Ejecuta Query
-					ps2.executeQuery();
-					System.out.println("Si ejecuta qry y pasa a buscar id");
-					*/
-					
-					
-			System.out.println("Lista de rel componente agregada correctamente");
 			ps.close();
 			co.close();
+			stm.close();
+			rs.close();
+			stm2.close();
+			rs2.close();
 		} catch (SQLException e) {
-			System.out.println("Error al obtener la lista de rel componentes");
+			System.out.println("Error al insertar la lista de rel componentes");
 			e.printStackTrace();
+			dtoComponenteOut.setComentario(e.getMessage());
+			
+		} catch (Exception e) {
+			System.out.println("Error al insertar: Componente || Solicitud");
+			e.printStackTrace();
+			dtoComponenteOut.setComentario(e.getMessage());
+			
 		}
 			
 			

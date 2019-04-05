@@ -8,9 +8,14 @@ import com.microdat.wasdev.proyecto.model.wrapper.DTOProyectoList;
 public interface ProyectoService {
 
 	
-	public DTOProyectoList getProyecto(
+	public DTOProyectoList getProyectos(
 			DTOProyecto dtoProyecto);
 	
+	public DTOProyecto getProyecto(int id);
+	
 	public DTOProyecto postProyecto(
+			DTOProyecto dtoProyecto);
+
+	public DTOProyecto putProyecto(
 			DTOProyecto dtoProyecto);
 }
