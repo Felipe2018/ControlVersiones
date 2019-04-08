@@ -35,11 +35,11 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 				"from proyecto p \r\n" + 
 				"inner join fase_proyecto fp on p.id_fase_proyecto = fp.id_fase_proyecto\r\n" + 
 				"inner join usuario u on p.id_responsable= u.id_usuario order by id_proyecto asc";
-				//"Select * from proyecto";
+				
 		
 		System.out.println("Si ejecuta query listar proyecto");
 		
-		//List<DTOProyecto> proyectos = new ArrayList<DTOProyecto>();
+		
 		List<DTOProyecto> proyectos = new ArrayList<DTOProyecto>();
 		DTOProyectoList dtoproyectoList = new DTOProyectoList();
 		
@@ -152,12 +152,12 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 				dtoProyectoCarga.setTipo(rs.getString("tipo"));
 				
 				DTOUsuario responsable = new DTOUsuario();
-				//responsable.setId(rs.getInt("id_responsable"));
+				responsable.setId(rs.getInt("id_responsable"));
 				responsable.setNombre(rs.getString("nombre_usuario"));
 				dtoProyectoCarga.setResponsable(responsable);
 				
 				DTOListaOpciones faseDesarrollo = new DTOListaOpciones();
-				//faseDesarrollo.setId(rs.getInt("id_fase_proyecto"));
+				faseDesarrollo.setId(rs.getInt("id_fase_proyecto"));
 				faseDesarrollo.setNombre(rs.getString("nombre_fase_proyecto"));
 				dtoProyectoCarga.setFaseDesarrollo(faseDesarrollo);
 				
@@ -186,7 +186,14 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 		Connection co = null;
 		PreparedStatement ps =null;
 		Boolean agregaFecha = false;
+		int cantidad =0;
+		Statement stm = null;
+		ResultSet rs = null;
 		
+		String sqlConsulta =
+					"select COUNT(*) cantidadProyectos \r\n" + 
+					"from proyecto \r\n" + 
+					"where nombre_proyecto = '" + dtoProyecto.getNombreProyecto() + "'";
 				
 		String sql1=		
 			"insert into proyecto (nombre_proyecto, id_responsable, "
@@ -217,6 +224,22 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 			System.out.println(dtoProyecto.getComentario());
 			System.out.println(dtoProyecto.getFaseDesarrollo().getId());
 			System.out.println(dtoProyecto.getCodigo());
+			System.out.println(dtoProyecto.getTipo());
+			
+			//Consulta Proyecto
+			
+			stm = co.createStatement();
+			rs = stm.executeQuery(sqlConsulta);
+				
+			while (rs.next()) {
+				System.out.println("La cantidad de proyectos:  " + rs.getInt("cantidadProyectos"));
+				cantidad = rs.getInt("cantidadProyectos");
+			
+			}
+
+			//Valida duplicidad de Proyecto
+			if(cantidad==0) {
+			
 			//Insertar a Query
 			ps.setString(1, dtoProyecto.getNombreProyecto());
 			ps.setInt(2, dtoProyecto.getResponsable().getId());
@@ -226,19 +249,16 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 			ps.setString(6, dtoProyecto.getTipo());
 			if(agregaFecha==true) {
 				ps.setDate(7, dtoProyecto.getFechaEstimadaEntrega());
-			}
+				}
 			
-			
-			dtoProyectoOut.setNombreProyecto(dtoProyecto.getNombreProyecto());
-			dtoProyectoOut.setComentario("Agregado Correctamente");
-			//dtoProyectoOut.setResponsable(dtoProyecto.getResponsable().getNombre());
-			//dtoProyectoOut.setResponsable(dtoProyecto.getCodigo());	
-				
-				//Ejecuta Query
-				
+				dtoProyectoOut.setNombreProyecto(dtoProyecto.getNombreProyecto());
+				dtoProyectoOut.setComentario("Agregado Correctamente");
 				ps.executeQuery();
 				System.out.println("Si ejecuta qry Inserta");
-		
+			}else {
+				System.out.println("Ya exite Proyecto");
+				dtoProyectoOut.setComentario("Ya existe un proyecto con ese nombre");
+			}
 				ps.close();
 				co.close();
 			} catch (SQLException e) {
@@ -289,4 +309,7 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 	return dtoProyectoOut;
 				
 	}
+
+	//Eliminar "FALTA HACER!"
+
 }
