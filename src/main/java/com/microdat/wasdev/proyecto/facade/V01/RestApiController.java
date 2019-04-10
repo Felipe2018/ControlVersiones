@@ -307,7 +307,8 @@ public class RestApiController {
 //********************************************************
 			
 	//No desarrollado aun*****
-	@PostMapping(path = "/componentes/solicitud/usuario", consumes = "application/json", produces = "application/json")
+	/*
+		@PostMapping(path = "/componentes/solicitud/usuario", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<?> postUsuarioSolicitud2(
 			@RequestBody DTOUsuario dtoUsuario) {
 		
@@ -331,10 +332,10 @@ public class RestApiController {
 		
 		return new ResponseEntity<DTOUsuario>(dtoUsuarioOut,HttpStatus.OK);
 	}
-	
+	*/
 //*******************************************************
 	// listar solicitudes
-		@GetMapping(path = "/{id}/solicitud", produces = "application/json")
+		@GetMapping(path = "/solicitud", produces = "application/json")
 	public ResponseEntity<?> obtenerSolicitudes(@PathVariable("id") int id) throws SQLException {
 			List<DTOSolicitud> solicitudes = solicitudService.obtenerSolicitudes();
 			if (solicitudes.size() == 0) {
@@ -369,8 +370,8 @@ public class RestApiController {
 //*********************************************
 	
 	//LISTAR USUARIO
-		@GetMapping(path = "/{id}/usuarios", produces = "application/json")
-	public ResponseEntity<?> obtenerUsuarios(@PathVariable("id") int id) throws SQLException {
+		@GetMapping(path = "/usuarios", produces = "application/json")
+	public ResponseEntity<?> obtenerUsuarios() throws SQLException {
 			List<DTOUsuario> usuarios = userService.obtenerUsuarios();
 			if (usuarios.size() == 0) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -380,7 +381,7 @@ public class RestApiController {
 
 		
 		//***Insertar Usuario  NO HECHO
-				@PostMapping(path = "/componentes/solicitud/usuario", consumes = "application/json", produces = "application/json")
+			/*	@PostMapping(path = "/componentes/solicitud/usuario", consumes = "application/json", produces = "application/json")
 			public ResponseEntity<?> postUsuarioSolicitud(@RequestBody DTOUsuario dtoUsuario) {
 
 					DTOUsuario dtoUsuarioOut = new DTOUsuario();
@@ -402,7 +403,7 @@ public class RestApiController {
 					dtoUsuarioOut = userService.postUsuarioSolicitud(dtoUsuario);
 
 					return new ResponseEntity<DTOUsuario>(dtoUsuarioOut, HttpStatus.OK);
-				}	
+				}	*/
 		
 		
 }
