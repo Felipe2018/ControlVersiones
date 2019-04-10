@@ -1,6 +1,7 @@
 package com.microdat.wasdev.proyecto.facade.V01;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +16,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.microdat.wasdev.proyecto.util.BusinessServiceException;
 import com.microdat.wasdev.proyecto.util.RoutineUtils;
 import com.microdat.wasdev.proyecto.business.ComponenteService;
+import com.microdat.wasdev.proyecto.business.IRelComponenteService;
+import com.microdat.wasdev.proyecto.business.ISolicitudService;
+import com.microdat.wasdev.proyecto.business.IUserService;
 import com.microdat.wasdev.proyecto.business.ProyectoService;
-import com.microdat.wasdev.proyecto.business.RelComponenteService;
-import com.microdat.wasdev.proyecto.business.UserService;
 import com.microdat.wasdev.proyecto.model.DTOAmbiente;
 import com.microdat.wasdev.proyecto.model.DTOComponente;
 import com.microdat.wasdev.proyecto.model.DTOProyecto;
+import com.microdat.wasdev.proyecto.model.DTOSolicitud;
 import com.microdat.wasdev.proyecto.model.DTOUsuario;
 import com.microdat.wasdev.proyecto.model.wrapper.DTOComponenteList;
 import com.microdat.wasdev.proyecto.model.wrapper.DTOProyectoList;
@@ -35,7 +39,10 @@ import com.microdat.wasdev.proyecto.model.wrapper.DTOProyectoList;
 public class RestApiController {
 
 	@Autowired
-	UserService userService;
+	IUserService userService;
+	
+	@Autowired
+	ISolicitudService solicitudService;
 	
 	@Autowired
 	ComponenteService componenteService;
@@ -44,7 +51,7 @@ public class RestApiController {
 	ProyectoService proyectoService;
 	
 	@Autowired
-	RelComponenteService relComponenteService;
+	IRelComponenteService relComponenteService;
 	
 	@Autowired
 	BusinessServiceException businessServiceException;
@@ -122,6 +129,13 @@ public class RestApiController {
 			return new ResponseEntity<DTOComponente>(dtoComponenteOut,HttpStatus.OK);
 		}
 
+	//ELIMINAR rel_proy_componente
+	@RequestMapping(value = "{id}/relproycomponente/{id_componente}/{id_proyecto}", method = { RequestMethod.DELETE })
+	public @ResponseBody void eliminarRelProyComponente(@PathVariable(value = "id_componente") int id_componente,
+			@PathVariable(value = "id_proyecto") int id_proyecto, @PathVariable(value = "id") int id) throws SQLException {
+		relComponenteService.eliminarRelProyComponente(id_componente, id_proyecto);
+	}
+		
 //*********************************************************		
 		
 	//LISTAR COMPONENTES - UBICACION LISTO
@@ -202,8 +216,7 @@ public class RestApiController {
 			componenteService.eliminarComponente(id_componente);
 		
 		}	
-		
-		
+			
 //*********************************************************		
 		
 	//LISTAR PROYECTOS LISTO
@@ -231,7 +244,6 @@ public class RestApiController {
 		
 	}
 	
-	
 	//LISTAR 1 PROYECTO LISTO
 		@GetMapping(path = "/proyecto/{id}", produces = "application/json")
 		public ResponseEntity<?> getProyecto(
@@ -249,7 +261,6 @@ public class RestApiController {
 		
 			return new ResponseEntity<DTOProyecto>(dtoProyecto,HttpStatus.OK);	
 		}
-	
 	
 	//INSERTAR PROYECTO LISTO
 			@PostMapping(path = "/proyecto", consumes = "application/json", produces = "application/json")
@@ -297,7 +308,7 @@ public class RestApiController {
 			
 	//No desarrollado aun*****
 	@PostMapping(path = "/componentes/solicitud/usuario", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<?> postUsuarioSolicitud(
+	public ResponseEntity<?> postUsuarioSolicitud2(
 			@RequestBody DTOUsuario dtoUsuario) {
 		
 		DTOUsuario dtoUsuarioOut = new DTOUsuario();
@@ -321,6 +332,77 @@ public class RestApiController {
 		return new ResponseEntity<DTOUsuario>(dtoUsuarioOut,HttpStatus.OK);
 	}
 	
+//*******************************************************
+	// listar solicitudes
+		@GetMapping(path = "/{id}/solicitud", produces = "application/json")
+	public ResponseEntity<?> obtenerSolicitudes(@PathVariable("id") int id) throws SQLException {
+			List<DTOSolicitud> solicitudes = solicitudService.obtenerSolicitudes();
+			if (solicitudes.size() == 0) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<>(solicitudes, HttpStatus.OK);
+		}
 
+	// insertar solicitud
+	@RequestMapping(value = "/{id}/solicitud", produces = "application/json", consumes = "application/json", method = {
+			RequestMethod.POST })
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<?> postSolicitud(@PathVariable("id") int id, @RequestBody DTOSolicitud solicitud)
+			throws SQLException {
+		// return solicitudService.insertarSolicitud(solicitud);
+		DTOSolicitud dtoSolicitud = new DTOSolicitud();
+		dtoSolicitud = solicitudService.insertarSolicitud(solicitud);
+		//dtoSolicitud.setId(solicitud.getId());
 
+		return new ResponseEntity<DTOSolicitud>(dtoSolicitud, HttpStatus.OK);
+	}
+
+	// editar solicitud
+	@RequestMapping(value = "/{id}/solicitud/{id_solicitud}", produces = "application/json", consumes = "application/json", method = RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.CREATED)
+	public DTOSolicitud editar(@PathVariable("id") int id, @PathVariable(value = "id_solicitud") String id_solicitud,
+				@RequestBody DTOSolicitud solicitud) throws SQLException {
+			solicitud.setId(id_solicitud);
+			return solicitudService.editarSolicitud(solicitud);
+		}
+	
+//*********************************************
+	
+	//LISTAR USUARIO
+		@GetMapping(path = "/{id}/usuarios", produces = "application/json")
+	public ResponseEntity<?> obtenerUsuarios(@PathVariable("id") int id) throws SQLException {
+			List<DTOUsuario> usuarios = userService.obtenerUsuarios();
+			if (usuarios.size() == 0) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<>(usuarios, HttpStatus.OK);
+		}	
+
+		
+		//***Insertar Usuario  NO HECHO
+				@PostMapping(path = "/componentes/solicitud/usuario", consumes = "application/json", produces = "application/json")
+			public ResponseEntity<?> postUsuarioSolicitud(@RequestBody DTOUsuario dtoUsuario) {
+
+					DTOUsuario dtoUsuarioOut = new DTOUsuario();
+
+					if (dtoUsuario == null) {
+						return businessServiceException.getError("mandatoryParametersMissingExplicit", "usuario");
+					} else if (dtoUsuario.getNombre() == null || dtoUsuario.getNombre().equals(StringUtils.EMPTY)) {
+						return businessServiceException.getError("mandatoryParametersMissingExplicit", "usuario.nombre");
+					} else if (dtoUsuario.getCorreo() == null || dtoUsuario.getCorreo().equals(StringUtils.EMPTY)) {
+						return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.correo");
+					} else if (dtoUsuario.getTelefono() == null || dtoUsuario.getTelefono().equals(StringUtils.EMPTY)) {
+						return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.telefono");
+					} else if (dtoUsuario.getEmpresa() == null) {
+						return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.empresa");
+					} else if (dtoUsuario.getEmpresa().getId() == null) {
+						return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.empresa.id");
+					}
+
+					dtoUsuarioOut = userService.postUsuarioSolicitud(dtoUsuario);
+
+					return new ResponseEntity<DTOUsuario>(dtoUsuarioOut, HttpStatus.OK);
+				}	
+		
+		
 }

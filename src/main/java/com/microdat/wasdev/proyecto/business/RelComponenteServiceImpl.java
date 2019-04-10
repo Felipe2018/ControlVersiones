@@ -1,5 +1,7 @@
 package com.microdat.wasdev.proyecto.business;
 
+import java.sql.SQLException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +11,7 @@ import com.microdat.wasdev.proyecto.model.DTOProyecto;
 import com.microdat.wasdev.proyecto.model.wrapper.DTOComponenteList;
 
 @Service("RelComponenteService")
-public class RelComponenteServiceImpl implements RelComponenteService {
+public class RelComponenteServiceImpl implements IRelComponenteService {
 
 	@Autowired
 	IRelComponenteServiceDao relComponenteServiceDao;
@@ -28,6 +30,11 @@ public class RelComponenteServiceImpl implements RelComponenteService {
 	@Override
 	public DTOComponente postComponenteProyectos(DTOComponente componente,DTOProyecto dtoProyecto) {
 		return relComponenteServiceDao.postComponenteProyectos(componente,dtoProyecto);
+	}
+	
+	@Override
+	public void eliminarRelProyComponente(int id_componente, int id_proyecto) throws SQLException{
+		relComponenteServiceDao.eliminarRelProyComponente(id_componente, id_proyecto);
 	}
 }
 

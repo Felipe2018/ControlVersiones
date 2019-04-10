@@ -15,7 +15,7 @@ public class DTOEmpresa  implements Serializable{
 	private Integer id;
 	private String razonSocial;
 	private String direccion;
-	private Integer telefono;
+	private String telefono;
 	
 	public DTOEmpresa() {}
 
@@ -43,11 +43,11 @@ public class DTOEmpresa  implements Serializable{
 		this.direccion = direccion;
 	}
 
-	public Integer getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
-	public void setTelefono(Integer telefono) {
+	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
 	

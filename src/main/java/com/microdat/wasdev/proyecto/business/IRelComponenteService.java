@@ -1,4 +1,4 @@
-package com.microdat.wasdev.proyecto.dao;
+package com.microdat.wasdev.proyecto.business;
 
 import java.sql.SQLException;
 
@@ -6,21 +6,18 @@ import com.microdat.wasdev.proyecto.model.DTOComponente;
 import com.microdat.wasdev.proyecto.model.DTOProyecto;
 import com.microdat.wasdev.proyecto.model.wrapper.DTOComponenteList;
 
-public interface IRelComponenteServiceDao {
+public interface IRelComponenteService {
 
 	public DTOComponenteList getComponentesProyecto(
-			DTOComponente componente) ;
+			DTOComponente componente);
 	
 	public DTOComponenteList getComponente(
-			DTOComponente componente) ;
+			DTOComponente componente);
 	
 	public DTOComponente postComponenteProyectos(
-			DTOComponente componente,
-			DTOProyecto dtoProyecto
-			);
+			DTOComponente dtoComponente, DTOProyecto dtoProyecto);
 	
 	public void eliminarRelProyComponente(
-			int id_componente, int id_proyecto
-			) throws SQLException;
+			int id_componente, int id_proyecto) throws SQLException;
 	
 }
