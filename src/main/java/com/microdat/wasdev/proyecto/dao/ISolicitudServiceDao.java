@@ -9,9 +9,13 @@ public interface ISolicitudServiceDao {
 	
 	public List<DTOSolicitud> obtenerSolicitudes() throws SQLException;
 	
+	public DTOSolicitud getSolicitud(int id) ;
+	
 	public DTOSolicitud insertarSolicitud(DTOSolicitud solicitud) throws SQLException;
 	
 	public DTOSolicitud editarSolicitud(DTOSolicitud solicitud) throws SQLException;
+
+	
 
 
 

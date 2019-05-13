@@ -18,6 +18,7 @@ public class DTOProyecto implements Serializable {
 	private String nombreProyecto;
 	private DTOListaOpciones faseDesarrollo;
 	private DTOUsuario responsable;
+	private DTOUsuario responsableDyd;
 	private String comentario;
 	private String codigo;
 	private Date fechaCreacion;
@@ -26,6 +27,14 @@ public class DTOProyecto implements Serializable {
 	private List<DTOComponente> componentes;
 	private Integer dyd;
 	private String tipo;
+
+	public DTOUsuario getResponsableDyd() {
+		return responsableDyd;
+	}
+
+	public void setResponsableDyd(DTOUsuario responsableDyd) {
+		this.responsableDyd = responsableDyd;
+	}
 
 	public DTOProyecto() {}
 

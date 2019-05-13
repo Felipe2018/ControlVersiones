@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.microdat.wasdev.proyecto.dao.ISolicitudServiceDao;
+import com.microdat.wasdev.proyecto.model.DTOProyecto;
 import com.microdat.wasdev.proyecto.model.DTOSolicitud;
 
 @Service("solicitudService")
@@ -19,6 +20,11 @@ public class SolicitudServiceImpl implements ISolicitudService {
 		return solicitudServiceDao.obtenerSolicitudes();
 	}
 
+	@Override
+	public DTOSolicitud getSolicitud(int id) {
+		return solicitudServiceDao.getSolicitud(id);
+	}
+	
 	@Override
 	public DTOSolicitud insertarSolicitud(DTOSolicitud solicitud) throws SQLException {
 		

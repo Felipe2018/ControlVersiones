@@ -1,23 +1,18 @@
 package com.microdat.wasdev.proyecto.business;
 
-
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.microdat.wasdev.proyecto.dao.Conexion;
 import com.microdat.wasdev.proyecto.dao.IUserServiceDao;
 import com.microdat.wasdev.proyecto.model.DTOComponente;
 import com.microdat.wasdev.proyecto.model.DTOEmpresa;
-import com.microdat.wasdev.proyecto.model.DTOProyecto;
 import com.microdat.wasdev.proyecto.model.DTOUsuario;
 import com.microdat.wasdev.proyecto.model.wrapper.DTOComponenteList;
+import com.microdat.wasdev.proyecto.util.RoutineUtils;
 
 
 @Service("userService")
@@ -25,22 +20,13 @@ public class UserServiceImpl implements IUserService{
 	
 	@Autowired
 	IUserServiceDao userServiceDao;
-
-	@Override
-	public DTOUsuario postUsuarioSolicitud(DTOUsuario dtoUsuario) {
-		
-		DTOUsuario dtoUsuarioOut = new DTOUsuario();
-		
-		dtoUsuarioOut.setId(1123);
-		
-		return dtoUsuarioOut;
-	}
-
-
+	
+	@Autowired
+	RoutineUtils routineUtils;
 
 	@Override
 	public List<DTOUsuario> obtenerUsuarios() throws SQLException {
-		
+		/*
 		Connection co = null;
 		Statement stm = null;
 		ResultSet rs = null;
@@ -79,13 +65,57 @@ public class UserServiceImpl implements IUserService{
 			System.out.println("Error al obtener la lista de usuarios");
 			e.printStackTrace();
 		}
-		return listaUsuarios;
+		return listaUsuarios;*/
+		return userServiceDao.obtenerUsuarios();
 	}
 
-
-	/*
 	@Override
-	public DTOComponente postComponenteProyectos(DTOComponente componente,DTOProyecto dtoProyecto) {
-		return userServiceDao.postComponenteProyectos(componente,dtoProyecto);
-	}*/
+	public List<DTOEmpresa> obtenerEmpresas() {
+		// TODO Auto-generated method stub
+		return userServiceDao.obtenerEmpresas();
+	}
+
+	@Override
+	public DTOUsuario insertarUsuario(DTOUsuario dtoUsuario) {
+		// TODO Auto-generated method stub
+		return userServiceDao.postUsuarioSolicitud(dtoUsuario);
+	}
+
+	@Override
+	public DTOUsuario actualizarUsuario(DTOUsuario dtoUsuario) {
+		// TODO Auto-generated method stub
+		return userServiceDao.actualizarUsuario(dtoUsuario);
+				
+	}
+	//Axell
+	@Override
+	public DTOComponenteList getComponentesSolicitud(int id, DTOComponente componente, String duplicados) {
+		// TODO Auto-generated method stub
+		/*String duplicados = StringUtils.EMPTY;
+		duplicados = routineUtils.valorDesdeFiltro(filter, "duplicados");*/
+		System.out.println("duplicado: "+duplicados);
+		
+		if(duplicados.equals("1")) {
+			System.out.println("Envio correcto filtro duplicado");
+			return null;
+		}
+		
+		else {
+			System.out.println("Envio correcto sin filtro");
+			return userServiceDao.getComponentesSolicitud(id,componente,duplicados);	
+		}
+		
+		
+	}
+	
+	/*
+		@Override
+		public DTOComponenteList getComponentesSolicitud(int id,DTOComponente componente) {
+			
+			return userServiceDao.getComponentesSolicitud(id,componente);
+			
+		}*/
+
+
+	
 }

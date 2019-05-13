@@ -19,7 +19,37 @@ public class RelComponenteServiceImpl implements IRelComponenteService {
 	
 	@Override
 	public DTOComponenteList getComponentesProyecto(DTOComponente componente) {
-		return relComponenteServiceDao.getComponentesProyecto(componente);
+		System.out.println("Id Proyecto ingresado   "+componente.getIdProyecto());
+		
+		
+		/*
+		if(componente.getGrupoFuncional().getId()==null) {
+			
+		}else {
+			System.out.println("Grupo Funcional :"+componente.getGrupoFuncional().getId());
+		}
+		if(componente.getEstado().getId()==null) {
+			
+		}else {
+			System.out.println("Estado: "+componente.getEstado().getId());
+		}
+		if(componente.getFuncionalidad().getId()==null) {
+			
+		}else {
+			System.out.println("Funcionalidad: "+componente.getFuncionalidad().getId());
+		}*/
+		
+		
+		
+		if(componente.getIdProyecto()==null) {
+			System.out.println("Entra normal" );
+			return relComponenteServiceDao.getComponentesProyecto(componente);
+		}else {
+			System.out.println("Entra filtrado ");
+			return relComponenteServiceDao.getComponentesProyectoFirltrar(componente);
+		}
+		
+		//return relComponenteServiceDao.getComponentesProyecto(componente);
 	}
 	
 	@Override

@@ -22,5 +22,8 @@ public interface IRelComponenteServiceDao {
 	public void eliminarRelProyComponente(
 			int id_componente, int id_proyecto
 			) throws SQLException;
+
+	DTOComponenteList getComponentesProyectoFirltrar(
+			DTOComponente componente);
 	
 }

@@ -27,6 +27,56 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 	@Autowired
 	RoutineUtils routineUtils;
 	
+	
+	@Override
+	public DTOComponenteList getComponentesProyectoFirltrar(DTOComponente componente) {
+		Connection co = null;
+		Statement stm = null;
+		ResultSet rs = null;
+		
+		String sql="select distinct nro_solicitud \r\n" + 
+		"from rel_proy_componente \r\n" + 
+		"where id_proyecto ="+componente.getIdProyecto()+" order by nro_solicitud";
+
+		List<DTOComponente> componentes = new ArrayList<DTOComponente>();
+		DTOComponenteList dtoComponenteList = new DTOComponenteList();
+		
+		try {
+			co = Conexion.conn();
+			stm = co.createStatement();
+			
+			rs = stm.executeQuery(sql);
+			
+			System.out.println("Conexion Correcta bbdd");
+			
+			
+			while (rs.next()) {
+				
+					//Agrega id componente
+					DTOComponente dtoComponente1 = new DTOComponente();
+				
+					DTOSolicitud solicitud = new DTOSolicitud();
+					solicitud.setId(rs.getString("nro_solicitud"));
+					dtoComponente1.setSolicitud(solicitud);
+					
+					componentes.add(dtoComponente1);
+			}
+						
+			System.out.println("Lista rel componentes obtenida correctamente");
+			stm.close();
+			rs.close();
+			co.close();
+		} catch (SQLException e) {
+			System.out.println("Error al obtener la lista de rel componentes");
+			e.printStackTrace();
+		}
+				
+			dtoComponenteList.setComponentes(componentes);
+			
+			return dtoComponenteList;
+	}
+	
+	
 	//Listar Rel Componentes
 	@Override
 	public DTOComponenteList getComponentesProyecto(DTOComponente componente)  {
@@ -281,8 +331,6 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 				}
 			
 			
-			
-			/*
 			//1 ID PROYECTO
 			System.out.println( dtoProyecto.getId());
 			//2 ID COMPONENTE
@@ -303,7 +351,7 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 			//System.out.println(dtoComponente.getComentario());
 			//10 PRIORIDAD
 			//System.out.println();
-			*/
+			
 			ps.setInt(1, dtoProyecto.getId());
 			ps.setInt(2, dtoComponente.getId());
 			ps.setInt(3, dtoComponente.getUbicaciones().get(0).getAmbiente().getId());
@@ -366,6 +414,8 @@ public class RelComponenteServiceDao implements IRelComponenteServiceDao{
 				ps.close();
 			}
 		}
+
+	
 		
 
 }

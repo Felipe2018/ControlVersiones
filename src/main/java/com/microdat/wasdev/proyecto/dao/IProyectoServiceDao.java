@@ -18,5 +18,8 @@ public interface IProyectoServiceDao {
 	
 	public DTOProyecto putProyecto(
 			DTOProyecto dtoProyecto);
+
+	DTOProyectoList getProyectosFiltro(
+			DTOProyecto dtoProyecto);
 	
 }

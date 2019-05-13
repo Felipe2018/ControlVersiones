@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,12 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.microdat.wasdev.proyecto.util.BusinessServiceException;
 import com.microdat.wasdev.proyecto.util.RoutineUtils;
 import com.microdat.wasdev.proyecto.business.ComponenteService;
+import com.microdat.wasdev.proyecto.business.IMantenedoresService;
 import com.microdat.wasdev.proyecto.business.IRelComponenteService;
 import com.microdat.wasdev.proyecto.business.ISolicitudService;
 import com.microdat.wasdev.proyecto.business.IUserService;
 import com.microdat.wasdev.proyecto.business.ProyectoService;
 import com.microdat.wasdev.proyecto.model.DTOAmbiente;
 import com.microdat.wasdev.proyecto.model.DTOComponente;
+import com.microdat.wasdev.proyecto.model.DTOEmpresa;
+import com.microdat.wasdev.proyecto.model.DTOListaOpciones;
 import com.microdat.wasdev.proyecto.model.DTOProyecto;
 import com.microdat.wasdev.proyecto.model.DTOSolicitud;
 import com.microdat.wasdev.proyecto.model.DTOUsuario;
@@ -36,8 +40,10 @@ import com.microdat.wasdev.proyecto.model.wrapper.DTOProyectoList;
 //Axcel
 @RestController
 @RequestMapping("/V01")
+//@CrossOrigin(origins= {"http://localhost:8090"})
 public class RestApiController {
 
+	
 	@Autowired
 	IUserService userService;
 	
@@ -54,6 +60,10 @@ public class RestApiController {
 	IRelComponenteService relComponenteService;
 	
 	@Autowired
+	IMantenedoresService mantenedoresService;
+	
+	
+	@Autowired
 	BusinessServiceException businessServiceException;
 	
 	@Autowired
@@ -62,11 +72,103 @@ public class RestApiController {
 	//*******************LISTAR
 	
 	//LISTAR REL COMPONENTES  LISTO
-	@GetMapping(path = "/componentes", produces = "application/json")
-	public ResponseEntity<?> getComponentesProyecto() {
+	@GetMapping(path = "/relComponentes", produces = "application/json")
+	@CrossOrigin(origins = "*")
+	public ResponseEntity<?> getComponentesProyecto(
+			@RequestParam(value="$filter", required = false) String filter) {
 		
 		DTOComponenteList dtoComponenteList = new DTOComponenteList();
 		DTOComponente dtoComponente = new DTOComponente();
+		//Filtro
+		//DTOComponenteList dtoComponenteList = new DTOComponenteList();
+		//DTOComponente dtoComponente = new DTOComponente();
+		
+		//DTOComponente proyecto = new DTOComponente();
+		DTOSolicitud solicitud = new DTOSolicitud();
+		DTOListaOpciones grupoFuncional = new DTOListaOpciones();
+		DTOListaOpciones estado = new DTOListaOpciones();
+		DTOListaOpciones funcionalidad = new DTOListaOpciones();
+		
+		String proyectoId =  StringUtils.EMPTY;
+		String solicitudId = StringUtils.EMPTY;
+		String grupoFuncionalId = StringUtils.EMPTY;
+		String estadoId = StringUtils.EMPTY;
+		String funcionalidadId = StringUtils.EMPTY;
+		
+		
+		if (filter != null && !filter.equals("") && !filter.equals("()") ){
+			proyectoId = routineUtils.valorDesdeFiltro(filter, "proyectoId");
+			solicitudId = routineUtils.valorDesdeFiltro(filter, "solicitudId");
+			grupoFuncionalId = routineUtils.valorDesdeFiltro(filter, "grupoFuncionalId");
+			estadoId = routineUtils.valorDesdeFiltro(filter, "estadoId");
+			funcionalidadId = routineUtils.valorDesdeFiltro(filter, "funcionalidadId");
+			
+		}/*else {
+			return businessServiceException.getError("filterEmpty");
+		}*/
+		
+		/*
+		if(solicitudId.equals(StringUtils.EMPTY)) {
+			return businessServiceException.getError("mandatoryParametersMissingExplicit", "solicitudId");
+		}else {
+			try {
+				solicitud.setId(solicitudId);
+				//solicitud.setId(Integer.parseInt(solicitudId));
+			}catch (NumberFormatException e){
+				return businessServiceException.getError("paramValueIsNotAsExpected", "solicitudId", "numéricos");
+			}
+		}*/
+		//------------
+		if(!proyectoId.equals(StringUtils.EMPTY)) {
+			try {
+				dtoComponente.setIdProyecto(Integer.parseInt(proyectoId));
+			}catch (NumberFormatException e){
+				return businessServiceException.getError("paramValueIsNotAsExpected", "proyectoId", "numéricos");
+			}
+		}
+		
+		/*
+		if(!solicitudId.equals(StringUtils.EMPTY)) {
+			try {
+				solicitud.setId(solicitudId);
+			}catch (NumberFormatException e){
+				return businessServiceException.getError("paramValueIsNotAsExpected", "solicitudId", "numéricos");
+			}
+		}
+		//------------
+		
+		if(!grupoFuncionalId.equals(StringUtils.EMPTY)) {
+			try {
+				grupoFuncional.setId(Integer.parseInt(grupoFuncionalId));
+			}catch (NumberFormatException e){
+				return businessServiceException.getError("paramValueIsNotAsExpected", "grupoFuncionalId", "numéricos");
+			}
+		}
+		
+		if(!estadoId.equals(StringUtils.EMPTY)) {
+			try {
+				estado.setId(Integer.parseInt(estadoId));
+			}catch (NumberFormatException e){
+				return businessServiceException.getError("paramValueIsNotAsExpected", "estadoId", "numéricos");
+			}
+		}
+		
+		if(!funcionalidadId.equals(StringUtils.EMPTY)) {
+			try {
+				funcionalidad.setId(Integer.parseInt(funcionalidadId));
+			}catch (NumberFormatException e){
+				return businessServiceException.getError("paramValueIsNotAsExpected", "funcionalidadId", "numéricos");
+			}
+		}*/
+		
+	
+		//dtoComponente.setIdProyecto(proyecto);
+		//dtoComponente.setSolicitud(solicitud);;
+		/*
+		dtoComponente.setGrupoFuncional(grupoFuncional);
+		dtoComponente.setEstado(estado);
+		dtoComponente.setFuncionalidad(funcionalidad);*/
+		
 		
 		dtoComponenteList = relComponenteService.getComponentesProyecto(dtoComponente);
 		
@@ -76,7 +178,7 @@ public class RestApiController {
 	
 	//LISTAR 1 REL COMPONENTES  LISTO
 		
-		@GetMapping(path = "/relcomponente/{id}", produces = "application/json")
+		@GetMapping(path = "/relComponentes/{id}", produces = "application/json")
 		@CrossOrigin(origins = "*")
 		public ResponseEntity<?> getComponente(
 				@PathVariable("id") Integer id
@@ -98,7 +200,7 @@ public class RestApiController {
 		}
 	
 	//INSERTAR REL COMPONENTE
-		@PostMapping(path = "/{id}/componentes", consumes = "application/json", produces = "application/json")
+		@PostMapping(path = "/{id}/relComponentes", consumes = "application/json", produces = "application/json")
 		public ResponseEntity<?> postComponenteProyectos(
 				@PathVariable("id") Integer id,
 				@RequestBody DTOComponente dtoComponente, DTOProyecto dtoProyecto) {
@@ -130,7 +232,7 @@ public class RestApiController {
 		}
 
 	//ELIMINAR rel_proy_componente
-	@RequestMapping(value = "{id}/relproycomponente/{id_componente}/{id_proyecto}", method = { RequestMethod.DELETE })
+	@RequestMapping(value = "relComponentes/{id_componente}/{id_proyecto}", method = { RequestMethod.DELETE })
 	public @ResponseBody void eliminarRelProyComponente(@PathVariable(value = "id_componente") int id_componente,
 			@PathVariable(value = "id_proyecto") int id_proyecto, @PathVariable(value = "id") int id) throws SQLException {
 		relComponenteService.eliminarRelProyComponente(id_componente, id_proyecto);
@@ -161,9 +263,9 @@ public class RestApiController {
 		}
 	
 	//LISTAR 1 COMPONENTE - UBICACION LISTO
-	@GetMapping(path = "/{id}/ubicacion/componentes/{id_componente}/{id_ambiente}", produces = "application/json")
+	@GetMapping(path = "/ubicacion/componentes/{id_componente}/{id_ambiente}", produces = "application/json")
 	public ResponseEntity<?> getObtenerComponente(
-			@PathVariable(value = "id_componente") int id_componente,@PathVariable("id") int id, @PathVariable(value="id_ambiente") int id_ambiente) throws SQLException {
+			@PathVariable(value = "id_componente") int id_componente, @PathVariable(value="id_ambiente") int id_ambiente) throws SQLException {
 		
 			DTOComponente componente = componenteService.obtenerComponente(id_componente, id_ambiente);
 		
@@ -173,7 +275,7 @@ public class RestApiController {
 	}
 	
 	//INSERTAR COMPONENTE - UBICACION LISTO
-		@PostMapping(path = "/componentes/ubicacion", consumes = "application/json", produces = "application/json")
+		@PostMapping(path = "/ubicacion/componentes", consumes = "application/json", produces = "application/json")
 		public ResponseEntity<?> postUbicacion(
 				@RequestBody DTOComponente dtoComponente) {
 			
@@ -196,8 +298,8 @@ public class RestApiController {
 		}
 		
 	//ACTUALIZAR COMPONENTE - UBICACION LISTO
-	@RequestMapping(path = "{id}/componentes/{id_comp}/{id_amb}", produces = "application/json", consumes = "application/json", method = RequestMethod.PUT)
-	public ResponseEntity<?> actualizarComponente(@PathVariable(value="id") int id, @PathVariable(value = "id_comp") int id_comp,
+	@RequestMapping(path = "/ubicacion/componentes/{id_comp}/{id_amb}", produces = "application/json", consumes = "application/json", method = RequestMethod.PUT)
+	public ResponseEntity<?> actualizarComponente( @PathVariable(value = "id_comp") int id_comp,
 			@PathVariable(value = "id_amb") int id_amb, @RequestBody DTOComponente componente) throws SQLException{
 		
 		DTOAmbiente amb = new DTOAmbiente();
@@ -211,8 +313,8 @@ public class RestApiController {
 	}
 		
 	//ELIMINAR COMPONENTE - UBICACION LISTO
-	@RequestMapping(value="{id}/componentes/{id_componente}", method = {RequestMethod.DELETE})
-	public @ResponseBody void eliminar(@PathVariable(value = "id_componente") int id_componente, @PathVariable(value="id") int id) throws SQLException {
+	@RequestMapping(value="/componentes/{id_componente}", method = {RequestMethod.DELETE})
+	public @ResponseBody void eliminar(@PathVariable(value = "id_componente") int id_componente) throws SQLException {
 			componenteService.eliminarComponente(id_componente);
 		
 		}	
@@ -220,11 +322,10 @@ public class RestApiController {
 //*********************************************************		
 		
 	//LISTAR PROYECTOS LISTO
-	@GetMapping(path = "/proyectos", produces = "application/json")
+	@GetMapping(path = "", produces = "application/json")
 	public ResponseEntity<?> getProyectos(
 			//@PathVariable("id") String id
 			) {
-		
 		
 		DTOProyectoList dtoProyectoList = new DTOProyectoList();
 		DTOProyecto dtoProyecto = new DTOProyecto();
@@ -239,13 +340,11 @@ public class RestApiController {
 		*/
 		dtoProyectoList = proyectoService.getProyectos(dtoProyecto);
 		
-		
 		return new ResponseEntity<DTOProyectoList>(dtoProyectoList,HttpStatus.OK);
-		
 	}
 	
 	//LISTAR 1 PROYECTO LISTO
-		@GetMapping(path = "/proyecto/{id}", produces = "application/json")
+		@GetMapping(path = "/{id}", produces = "application/json")
 		public ResponseEntity<?> getProyecto(
 				@PathVariable("id") Integer id) {
 		
@@ -306,49 +405,43 @@ public class RestApiController {
 			
 //********************************************************
 			
-	//No desarrollado aun*****
-	/*
-		@PostMapping(path = "/componentes/solicitud/usuario", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<?> postUsuarioSolicitud2(
-			@RequestBody DTOUsuario dtoUsuario) {
-		
-		DTOUsuario dtoUsuarioOut = new DTOUsuario();
-		
-		if(dtoUsuario == null) {
-			return businessServiceException.getError("mandatoryParametersMissingExplicit", "usuario");
-		}else if(dtoUsuario.getNombre() == null || dtoUsuario.getNombre().equals(StringUtils.EMPTY)) {
-			return businessServiceException.getError("mandatoryParametersMissingExplicit", "usuario.nombre");
-		}else if(dtoUsuario.getCorreo() == null || dtoUsuario.getCorreo().equals(StringUtils.EMPTY)) {
-			return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.correo");
-		}else if(dtoUsuario.getTelefono() == null || dtoUsuario.getTelefono().equals(StringUtils.EMPTY)) {
-			return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.telefono");
-		}else if(dtoUsuario.getEmpresa() == null) {
-			return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.empresa");
-		}else if(dtoUsuario.getEmpresa().getId() == null) {
-			return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.empresa.id");
-		}
-		
-		dtoUsuarioOut = userService.postUsuarioSolicitud(dtoUsuario);
-		
-		return new ResponseEntity<DTOUsuario>(dtoUsuarioOut,HttpStatus.OK);
-	}
-	*/
+
 //*******************************************************
 	// listar solicitudes
 		@GetMapping(path = "/solicitud", produces = "application/json")
-	public ResponseEntity<?> obtenerSolicitudes(@PathVariable("id") int id) throws SQLException {
+	public ResponseEntity<?> obtenerSolicitudes(//@PathVariable("id") int id
+			) throws SQLException {
 			List<DTOSolicitud> solicitudes = solicitudService.obtenerSolicitudes();
 			if (solicitudes.size() == 0) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
 			return new ResponseEntity<>(solicitudes, HttpStatus.OK);
 		}
+		
+		//LISTAR 1 SOLICITUD
+		@GetMapping(path = "/{id}/solicitud", produces = "application/json")
+	public ResponseEntity<?> getSolicitud(
+			@PathVariable("id") Integer id) {
+	
+		DTOSolicitud dtoSolicitud = new DTOSolicitud();
+		DTOProyecto dtoProyecto = new DTOProyecto();
+		try {
+			dtoProyecto.setId(id);
+		}catch (NumberFormatException e){
+			return businessServiceException.getError("paramValueIsNotAsExpected", "id", "numéricos");
+		}
+		
+		dtoSolicitud = solicitudService.getSolicitud(id);
+	
+		return new ResponseEntity<DTOSolicitud>(dtoSolicitud,HttpStatus.OK);	
+	}
+		
 
 	// insertar solicitud
-	@RequestMapping(value = "/{id}/solicitud", produces = "application/json", consumes = "application/json", method = {
+	@RequestMapping(value = "/solicitud", produces = "application/json", consumes = "application/json", method = {
 			RequestMethod.POST })
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<?> postSolicitud(@PathVariable("id") int id, @RequestBody DTOSolicitud solicitud)
+	public ResponseEntity<?> postSolicitud( @RequestBody DTOSolicitud solicitud)
 			throws SQLException {
 		// return solicitudService.insertarSolicitud(solicitud);
 		DTOSolicitud dtoSolicitud = new DTOSolicitud();
@@ -359,18 +452,27 @@ public class RestApiController {
 	}
 
 	// editar solicitud
-	@RequestMapping(value = "/{id}/solicitud/{id_solicitud}", produces = "application/json", consumes = "application/json", method = RequestMethod.PUT)
+	@RequestMapping(value = "/solicitud/{id_solicitud}", produces = "application/json", consumes = "application/json", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.CREATED)
-	public DTOSolicitud editar(@PathVariable("id") int id, @PathVariable(value = "id_solicitud") String id_solicitud,
+	public DTOSolicitud editar( @PathVariable(value = "id_solicitud") String id_solicitud,
 				@RequestBody DTOSolicitud solicitud) throws SQLException {
 			solicitud.setId(id_solicitud);
 			return solicitudService.editarSolicitud(solicitud);
 		}
 	
 //*********************************************
+	// LISTAR EMPRESAS
+	@GetMapping(path = "/componente/solicitud/usuarios/empresas", produces = "application/json")
+	public ResponseEntity<?> obtenerEmpresas() throws SQLException {
+		List<DTOEmpresa> empresas = userService.obtenerEmpresas();
+		if (empresas.size() == 0) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(empresas, HttpStatus.OK);
+	}
 	
 	//LISTAR USUARIO
-		@GetMapping(path = "/usuarios", produces = "application/json")
+		@GetMapping(path = "/componente/solicitud/usuarios", produces = "application/json")
 	public ResponseEntity<?> obtenerUsuarios() throws SQLException {
 			List<DTOUsuario> usuarios = userService.obtenerUsuarios();
 			if (usuarios.size() == 0) {
@@ -379,31 +481,139 @@ public class RestApiController {
 			return new ResponseEntity<>(usuarios, HttpStatus.OK);
 		}	
 
+	// insertar usuario
+		@PostMapping(path = "/componente/solicitud/usuarios", consumes = "application/json", produces = "application/json")
+		//@RequestMapping(value = "/componente/solicitud/usuarios", produces = "application/json", consumes = "application/json", 
+			//	method = {RequestMethod.POST })
+		public ResponseEntity<?> insertarUsuario( @RequestBody DTOUsuario usuario) throws SQLException {
+			// return solicitudService.insertarSolicitud(solicitud);
+			System.out.println("Ingresa a Servicio insertar");
+			DTOUsuario dtoUsuario = new DTOUsuario();
+			dtoUsuario = userService.insertarUsuario(usuario);
+			//dtoSolicitud.setId(solicitud.getId());
+	
+			return new ResponseEntity<DTOUsuario>(dtoUsuario, HttpStatus.CREATED);
+		}
+	
+		// editar usuario
+		@PutMapping(path = "/componente/solicitud/usuarios/{id}", consumes = "application/json", produces = "application/json")
+		//@RequestMapping(value = "/componente/solicitud/usuarios/{id}", produces = "application/json", consumes = "application/json", method = {RequestMethod.PUT})
+		public ResponseEntity<?> editarUsuario( @PathVariable(value = "id") int id, @RequestBody DTOUsuario usuario) throws SQLException {
+				System.out.println("Ingresa a Servicio Modificar");
+			DTOUsuario dtoUsuario = new DTOUsuario();
+			dtoUsuario.setId(id);
+			dtoUsuario = userService.actualizarUsuario(usuario);
+			//dtoUsuario.setId(id);
+			
+			return new ResponseEntity<DTOUsuario>(dtoUsuario, HttpStatus.CREATED);
 		
-		//***Insertar Usuario  NO HECHO
-			/*	@PostMapping(path = "/componentes/solicitud/usuario", consumes = "application/json", produces = "application/json")
-			public ResponseEntity<?> postUsuarioSolicitud(@RequestBody DTOUsuario dtoUsuario) {
+		}
+		
+	
+		@GetMapping(path = "/componentes/{id}", produces = "application/json")
+		public ResponseEntity<?> getComponentesSolicitud(@PathVariable("id") Integer id,
+				@RequestParam(value="$filter", required = false) String filter) {
+			
+			
+			System.out.println(filter);
+			DTOComponenteList dtoComponenteList = new DTOComponenteList();
+			DTOComponente dtoComponente = new DTOComponente();
+			
+			DTOSolicitud solicitud = new DTOSolicitud();
+			DTOListaOpciones grupoFuncional = new DTOListaOpciones();
+			
+			String solicitudId = StringUtils.EMPTY;
+			String grupoFuncionalId = StringUtils.EMPTY;
+			String duplicados = StringUtils.EMPTY;
+			System.out.println("entra igual");
+			if (filter != null && !filter.equals("") && !filter.equals("()") ){
+				System.out.println("valida filtro");
+			
+				duplicados = routineUtils.valorDesdeFiltro(filter, "duplicados");
+				solicitudId = routineUtils.valorDesdeFiltro(filter, "solicitudId");
+				grupoFuncionalId = routineUtils.valorDesdeFiltro(filter, "grupoFuncionalId");
+			
+				
+			}/*else {
+				return businessServiceException.getError("filterEmpty");
+			}*/
+			
+			/*
+			if(solicitudId.equals(StringUtils.EMPTY)) {
+				return businessServiceException.getError("mandatoryParametersMissingExplicit", "solicitudId");
+			}else {
+				try {
+					solicitud.setId(solicitudId);
+					//solicitud.setId(Integer.parseInt(solicitudId));
+				}catch (NumberFormatException e){
+					return businessServiceException.getError("paramValueIsNotAsExpected", "solicitudId", "numéricos");
+				}
+			}*/
+		
+			if(!grupoFuncionalId.equals(StringUtils.EMPTY)) {
+				try {
+					grupoFuncional.setId(Integer.parseInt(grupoFuncionalId));
+				}catch (NumberFormatException e){
+					return businessServiceException.getError("paramValueIsNotAsExpected", "grupoFuncionalId", "numéricos");
+				}
+			}
+		
+			dtoComponente.setSolicitud(solicitud);
+			dtoComponente.setGrupoFuncional(grupoFuncional);
+			
+			dtoComponenteList = userService.getComponentesSolicitud(id, dtoComponente,duplicados);
+			
+			return new ResponseEntity<DTOComponenteList>(dtoComponenteList,HttpStatus.OK);
+			
+		}
+		
+//********************************************	
+		
 
-					DTOUsuario dtoUsuarioOut = new DTOUsuario();
-
-					if (dtoUsuario == null) {
-						return businessServiceException.getError("mandatoryParametersMissingExplicit", "usuario");
-					} else if (dtoUsuario.getNombre() == null || dtoUsuario.getNombre().equals(StringUtils.EMPTY)) {
-						return businessServiceException.getError("mandatoryParametersMissingExplicit", "usuario.nombre");
-					} else if (dtoUsuario.getCorreo() == null || dtoUsuario.getCorreo().equals(StringUtils.EMPTY)) {
-						return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.correo");
-					} else if (dtoUsuario.getTelefono() == null || dtoUsuario.getTelefono().equals(StringUtils.EMPTY)) {
-						return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.telefono");
-					} else if (dtoUsuario.getEmpresa() == null) {
-						return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.empresa");
-					} else if (dtoUsuario.getEmpresa().getId() == null) {
-						return businessServiceException.getError("mandatoryParametersMissingExplicit", "cliente.empresa.id");
-					}
-
-					dtoUsuarioOut = userService.postUsuarioSolicitud(dtoUsuario);
-
-					return new ResponseEntity<DTOUsuario>(dtoUsuarioOut, HttpStatus.OK);
-				}	*/
+		// listar fase proyecyo
+		@GetMapping(path = "/faseProyecto", produces = "application/json")
+		public ResponseEntity<?> obtenerFaseProyecto() throws SQLException {
+			DTOProyectoList dtoProyectoList = new DTOProyectoList();
+			DTOProyecto dtoProyecto = new DTOProyecto();
+			
+			dtoProyectoList = mantenedoresService.obtenerFaseProyecto(dtoProyecto);
+			
+			return new ResponseEntity<DTOProyectoList>(dtoProyectoList,HttpStatus.OK);
+				
+		}
+		
+		// listar ambientes
+		@GetMapping(path = "/ambiente", produces = "application/json")
+		public ResponseEntity<?> obtenerAmbiente() throws SQLException {
+			DTOComponenteList dtoComponenteList= new DTOComponenteList();
+			DTOComponente dtoComponente= new DTOComponente();
+			
+			dtoComponenteList = mantenedoresService.obtenerAmbiente(dtoComponente);
+			
+			return new ResponseEntity<DTOComponenteList>(dtoComponenteList,HttpStatus.OK);
+				
+		}
+		
+		// listar funcionalidades
+		@GetMapping(path = "/funcionalidad", produces = "application/json")
+		public ResponseEntity<?> obtenerFuncionalidad() throws SQLException {
+			DTOComponenteList dtoComponenteList= new DTOComponenteList();
+			DTOComponente dtoComponente= new DTOComponente();
+			dtoComponenteList = mantenedoresService.obtenerFuncionalidad(dtoComponente);
+							
+			return new ResponseEntity<DTOComponenteList>(dtoComponenteList,HttpStatus.OK);
+		}
+		
+		// listar grupos funcionales
+		@GetMapping(path = "/grupoFuncional", produces = "application/json")
+		public ResponseEntity<?> obtenerGrupoFuncional() throws SQLException {
+			DTOComponenteList dtoComponenteList= new DTOComponenteList();
+			DTOComponente dtoComponente= new DTOComponente();
+			dtoComponenteList = mantenedoresService.obtenerGrupoFuncional(dtoComponente);
+									
+			return new ResponseEntity<DTOComponenteList>(dtoComponenteList,HttpStatus.OK);
+		}
+			
 		
 		
 }
