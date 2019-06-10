@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 				"from proyecto p \r\n" + 
 				"inner join fase_proyecto fp on p.id_fase_proyecto = fp.id_fase_proyecto \r\n" + 
 				"inner join usuario u on p.id_responsable= u.id_usuario \r\n" + 
-				"left join usuario uDyd on p.id_dyd = uDyd.id_usuario order by id_proyecto asc";
+				"left join usuario uDyd on p.id_dyd = uDyd.id_usuario order by p.nombre_proyecto asc  ";
 				
 		
 		System.out.println("Si ejecuta query listar proyecto");
@@ -48,11 +49,16 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 			co = Conexion.conn();
 			stm = co.createStatement();
 			rs = stm.executeQuery(sql);
-					
-			while (rs.next()) {
-
-				DTOProyecto dtoProyectoCarga = new DTOProyecto();
+			SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
 			
+			 //SimpleDateFormat formato = SimpleDateFormat("dd/M/yyyy");
+			   // String fechaString = fechaEntrada.toString(); // Convierte Date a String
+			    //Date miFecha = formato.parse(fechaString); // convierte String a Date
+			
+			while (rs.next()) {
+				String fechaString = rs.getDate("ts_creacion_proyecto").toString(); // Convierte Date a String
+				DTOProyecto dtoProyectoCarga = new DTOProyecto();
+				System.out.println("Fecha con Formato Nuevo:  " );
 				System.out.println(rs.getDate("ts_creacion_proyecto"));
 				System.out.println(rs.getInt("id_proyecto"));	
 				//System.out.println(rs.getInt("id_dyd"));
@@ -258,7 +264,7 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 		String sqlConsulta =
 					"select COUNT(*) cantidadProyectos \r\n" + 
 					"from proyecto \r\n" + 
-					"where nombre_proyecto = '" + dtoProyecto.getNombreProyecto() + "'";
+					"where nombre_proyecto ='"+dtoProyecto.getNombreProyecto()+"' or codigo_proyecto='"+dtoProyecto.getCodigo()+"'";
 				
 		String sql1=		
 			"insert into proyecto (nombre_proyecto, id_responsable, id_dyd, "
@@ -341,7 +347,7 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 				
 			}else {
 				System.out.println("Ya exite Proyecto");
-				dtoProyectoOut.setComentario("Ya existe un proyecto con ese nombre");
+				dtoProyectoOut.setComentario("Ya existe un proyecto con ese nombre y/o código");
 			}
 				ps.close();
 				co.close();
@@ -362,13 +368,22 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 		String sql =
 				"update proyecto " 
 				+ "set nombre_proyecto = ? , id_responsable = ?, id_dyd = ?, id_fase_proyecto= ?,  "
-				+ "comentario_proyecto = ?, codigo_proyecto = ?, tipo = ? " 
+				+ "comentario_proyecto = ?, codigo_proyecto = ?, tipo = ?, FECHA_ESTIMADA_ENTREGA = ? " 
 				+ "where id_proyecto = ?";
 		
 		DTOProyecto dtoProyectoOut = new DTOProyecto();
 		
 		try {
 		
+			System.out.println(dtoProyecto.getNombreProyecto());
+			System.out.println(dtoProyecto.getResponsable().getId());
+			System.out.println(dtoProyecto.getResponsableDyd().getId());
+			System.out.println(dtoProyecto.getFaseDesarrollo().getId());
+			System.out.println(dtoProyecto.getComentario());
+			System.out.println(dtoProyecto.getCodigo());
+			System.out.println(dtoProyecto.getTipo());
+			System.out.println(dtoProyecto.getFechaEstimadaEntrega());
+			
 			co = Conexion.conn();
 			ps = co.prepareStatement(sql);
 			 
@@ -379,8 +394,8 @@ public class ProyectoServiceDaoImpl implements IProyectoServiceDao{
 			ps.setString(5, dtoProyecto.getComentario());
 			ps.setString(6, dtoProyecto.getCodigo());
 			ps.setString(7, dtoProyecto.getTipo());
-			System.out.println("tipo proyecto ingresado:  "+dtoProyecto.getTipo());
-			ps.setInt(7, dtoProyecto.getId());
+			ps.setDate(8, dtoProyecto.getFechaEstimadaEntrega());
+			ps.setInt(9, dtoProyecto.getId());
 			 
 			ps.executeQuery();
 			System.out.println("Si ejecuta qry Modificar");

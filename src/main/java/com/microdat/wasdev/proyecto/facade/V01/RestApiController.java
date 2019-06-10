@@ -40,7 +40,7 @@ import com.microdat.wasdev.proyecto.model.wrapper.DTOProyectoList;
 //Axcel
 @RestController
 @RequestMapping("/V01")
-//@CrossOrigin(origins= {"http://localhost:8090"})
+@CrossOrigin(origins = "*")
 public class RestApiController {
 
 	
@@ -324,20 +324,12 @@ public class RestApiController {
 	//LISTAR PROYECTOS LISTO
 	@GetMapping(path = "", produces = "application/json")
 	public ResponseEntity<?> getProyectos(
-			//@PathVariable("id") String id
+		
 			) {
 		
 		DTOProyectoList dtoProyectoList = new DTOProyectoList();
 		DTOProyecto dtoProyecto = new DTOProyecto();
-		
-		//DTOComponente dtoComponente = new DTOComponente();
-		/*
-		try {
-			dtoProyecto.setId(Integer.parseInt(id));
-		}catch (NumberFormatException e){
-			return businessServiceException.getError("paramValueIsNotAsExpected", "id", "numéricos");
-		}
-		*/
+	
 		dtoProyectoList = proyectoService.getProyectos(dtoProyecto);
 		
 		return new ResponseEntity<DTOProyectoList>(dtoProyectoList,HttpStatus.OK);
@@ -483,14 +475,12 @@ public class RestApiController {
 
 	// insertar usuario
 		@PostMapping(path = "/componente/solicitud/usuarios", consumes = "application/json", produces = "application/json")
-		//@RequestMapping(value = "/componente/solicitud/usuarios", produces = "application/json", consumes = "application/json", 
-			//	method = {RequestMethod.POST })
 		public ResponseEntity<?> insertarUsuario( @RequestBody DTOUsuario usuario) throws SQLException {
-			// return solicitudService.insertarSolicitud(solicitud);
+			
 			System.out.println("Ingresa a Servicio insertar");
 			DTOUsuario dtoUsuario = new DTOUsuario();
 			dtoUsuario = userService.insertarUsuario(usuario);
-			//dtoSolicitud.setId(solicitud.getId());
+			
 	
 			return new ResponseEntity<DTOUsuario>(dtoUsuario, HttpStatus.CREATED);
 		}

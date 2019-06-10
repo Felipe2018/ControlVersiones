@@ -312,7 +312,7 @@ public class ComponenteServiceDaoImpl implements IComponenteServiceDao {
 						"join AMBIENTE a on rca.ID_AMBIENTE = a.ID_AMBIENTE\r\n" + 
 						"join GRUPO_FUNCIONAL gf on c.ID_GRUPO_FUNCIONAL = gf.ID_GRUPO_FUNCIONAL\r\n" + 
 						"join FUNCIONALIDAD f on c.ID_FUNCIONALIDAD = f.ID_FUNCIONALIDAD\r\n" + 
-						"order by c.id_componente asc";
+						"order by c.nombre_componente asc,c.id_componente" ;
 				
 				/* Anterior
 				"select c.id_componente , c.nombre_componente, c.canal,f.id_funcionalidad, f.nombre_funcionalidad,\r\n" + 

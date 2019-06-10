@@ -40,7 +40,7 @@ public class UserServiceDaoImpl implements IUserServiceDao{
 				+ "e.razon_social, e.direccion_empresa, e.telefono_empresa "
 				+ "from usuario u "
 				+ "inner join empresa e on u.id_empresa = e.id_empresa "
-				+ "order by u.id_usuario";
+				+ "order by u.nombre_usuario";
 		
 		List<DTOUsuario> listaUsuarios = new ArrayList<DTOUsuario>();
 
@@ -103,20 +103,20 @@ public class UserServiceDaoImpl implements IUserServiceDao{
 				co = Conexion.conn();
 				 ps = co.prepareStatement(sql);
 				
-				//Consulta Proyecto
-					/*
+				//Consulta usuario
+					
 					stm = co.createStatement();
 					rs = stm.executeQuery(sqlConsulta);
 						
 					while (rs.next()) {
-						System.out.println("La cantidad de proyectos:  " + rs.getInt("cantidadProyectos"));
-						cantidad = rs.getInt("cantidadusuarios");
+						System.out.println("La cantidad de usuarios:  " + rs.getInt("cantidadUsuarios"));
+						cantidad = rs.getInt("cantidadUsuarios");
 					
 					}
 				 
-			//Valida duplicidad de Proyecto
+			//Valida duplicidad de Usuario
 			if(cantidad==0) {
-				 */
+				 
 				int i = 1;
 				ps.setInt(i++, dtoUsuario.getEmpresa().getId());
 				ps.setString(i++, dtoUsuario.getNombre());
@@ -128,10 +128,10 @@ public class UserServiceDaoImpl implements IUserServiceDao{
 				dtoUsuarioOut.setNombre(dtoUsuario.getNombre());
 				dtoUsuarioOut.setCorreo("Agregado Correctamente");
 			
-		/*	}else {
+			}else {
 				System.out.println("Ya exite usuario");
 				dtoUsuarioOut.setCorreo("Ya existe un Usuario con ese nombre");
-			}*/
+			}
 				
 				ps.close();
 				co.close();
@@ -180,12 +180,12 @@ public class UserServiceDaoImpl implements IUserServiceDao{
 	
 	
 	@Override 
-		public List<DTOEmpresa> obtenerEmpresas()  {
+	public List<DTOEmpresa> obtenerEmpresas()  {
 
 		Connection co = null;
 		Statement stm = null;
 		ResultSet rs = null;
-		String sql = "select * from empresa order by id_empresa";
+		String sql = "select * from empresa order by razon_social";
 		List<DTOEmpresa> listaEmpresas = new ArrayList<DTOEmpresa>();
 		try {
 			co = Conexion.conn();

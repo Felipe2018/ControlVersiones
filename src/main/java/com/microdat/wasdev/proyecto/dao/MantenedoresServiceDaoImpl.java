@@ -21,7 +21,7 @@ public class MantenedoresServiceDaoImpl implements IMantenedoresServiceDao {
 	public DTOProyectoList obtenerFaseProyecto(DTOProyecto dtoProyecto) throws SQLException {
 		
 		String query="select * from fase_proyecto "
-				+ "order by id_fase_proyecto";
+				+ "order by nombre_fase_proyecto";
 		Connection conn = Conexion.conn();
 		PreparedStatement ps = conn.prepareStatement(query);
 		ResultSet rs = ps.executeQuery();
@@ -59,7 +59,7 @@ public class MantenedoresServiceDaoImpl implements IMantenedoresServiceDao {
 	public DTOComponenteList obtenerAmbiente(DTOComponente dtoComponente) throws SQLException {
 		
 		String query="select * from ambiente "
-				+ "order by id_ambiente";
+				+ "order by nombre_ambiente";
 		Connection conn = Conexion.conn();
 		PreparedStatement ps = conn.prepareStatement(query);
 		ResultSet rs = ps.executeQuery();
@@ -96,7 +96,7 @@ public class MantenedoresServiceDaoImpl implements IMantenedoresServiceDao {
 	public DTOComponenteList obtenerFuncionalidad(DTOComponente dtoComponente) throws SQLException {
 		
 		String query="select * from funcionalidad "
-				+ "order by id_funcionalidad";
+				+ "order by nombre_funcionalidad";
 		Connection conn = Conexion.conn();
 		PreparedStatement ps = conn.prepareStatement(query);
 		ResultSet rs = ps.executeQuery();
@@ -132,7 +132,7 @@ public class MantenedoresServiceDaoImpl implements IMantenedoresServiceDao {
 	public DTOComponenteList obtenerGrupoFuncional(DTOComponente dtoComponente) throws SQLException {
 		
 		String query="select * from grupo_funcional "
-				+ "order by id_grupo_funcional";
+				+ "order by nombre_grupo_funcional";
 		Connection conn = Conexion.conn();
 		PreparedStatement ps = conn.prepareStatement(query);
 		ResultSet rs = ps.executeQuery();
@@ -141,6 +141,7 @@ public class MantenedoresServiceDaoImpl implements IMantenedoresServiceDao {
 		
 		try {
 			while(rs.next()) {
+				
 				DTOComponente dtoComponenteCarga = new DTOComponente();
 				DTOListaOpciones grupoFuncional = new DTOListaOpciones();
 				
@@ -148,7 +149,9 @@ public class MantenedoresServiceDaoImpl implements IMantenedoresServiceDao {
 				grupoFuncional.setNombre(rs.getString("nombre_grupo_funcional"));
 				dtoComponenteCarga.setFuncionalidad(grupoFuncional);
 				componentes.add(dtoComponenteCarga);
+				
 			}
+			
 			System.out.println("Lista de grupo funcional obtenida correctamente");
 			
 		}catch (SQLException e) {
